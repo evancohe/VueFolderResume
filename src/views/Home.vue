@@ -1,9 +1,12 @@
 <template>
   <div class="container">
-    <div class="area" :style="adjustSize" @dblclick="maxHome">
-      <div class="navBar">
+    <!-- Container Area -->
+    <div class="area" :style="adjustSize">
+      <!-- NavBar Area -->
+      <div class="navBar" @dblclick="maxHome">
         <div class="path">
           <div class="backBtn" v-if="!isMin" @click="goHome">&lt;</div>
+          <!-- Url Path Area -->
           <input class="url" v-if="!isMin" type="text" :value="currentUrl" />
           <div
             class="plusBtn"
@@ -13,16 +16,17 @@
             +
           </div>
         </div>
-
+        <!-- Control Area -->
         <div class="controlBtn">
           <div class="btn min" @click="minHome"></div>
           <div class="btn max" @click="maxHome"></div>
           <div class="btn close" @click="closeHome"></div>
         </div>
       </div>
+
       <div
         v-if="!isFolderSelecting && !isMin"
-        :class="viewStyle == 'folder' ? 'folder-list' : 'folder-list-l'"
+        :class="handleFolderStyle"
         @click.left="leftClicked()"
       >
         <div
@@ -35,6 +39,8 @@
             @click="selectFolder(folder)"
             @click.left="leftClicked"
             @contextmenu.prevent="rightClicked(index)"
+            @touchstart="touchStart(index)"
+            @touchend="touchEnd"
           >
             <Folder
               class="folder-item"
@@ -76,6 +82,7 @@
       >
       </Content>
 
+      <!-- Footer Area -->
       <div class="footer" v-if="!isFolderSelecting && !isMin">
         <div class="footer-count">{{ folderArr.length }} items</div>
         <div class="footer-type">
@@ -88,7 +95,6 @@
 </template>
 
 <script>
-// @ is an alias to /src
 import Folder from "@/components/Folder.vue";
 import Content from "@/components/Content";
 
@@ -100,30 +106,29 @@ export default {
   },
   data() {
     return {
-      currentUrl: "evancohe:\\",
+      currentUrl: "evanH:\\",
       folderArr: [
         { id: 0, name: "About", edit: false },
         { id: 1, name: "Projects", edit: false },
         { id: 2, name: "Exp", edit: false },
         { id: 3, name: "Blog", edit: false },
-        { id: 4, name: "123123123132132132131321", edit: false },
-        { id: 5, name: "Blog", edit: false },
       ],
-      currentFolder: "",
-      viewStyle: "folder",
       isFolderSelecting: false,
+      isMin: false,
+      isMax: false,
+      isPhone: false,
       top: "15%",
       width: "95%",
       minHeight: "70%",
       maxHeight: "70%",
       opacity: "1",
-      isMin: false,
-      isMax: false,
       menuStyle: "visibility: 0;",
+      currentFolder: "",
+      viewStyle: "folder",
+      beforeRenameVal: "",
       lastIndex: -1,
       editIndex: -1,
-      beforeRenameVal: "",
-      isPhone: false,
+      longPressTimer: "",
     };
   },
   mounted() {
@@ -133,11 +138,14 @@ export default {
     adjustSize() {
       return `top: ${this.top}; width: ${this.width}; min-height: ${this.minHeight}; max-height: ${this.maxHeight}; opacity: ${this.opacity}`;
     },
+    handleFolderStyle() {
+      return this.viewStyle == "folder" ? "folder-list" : "folder-list-l";
+    },
   },
   methods: {
     selectFolder(folder) {
       setTimeout(() => {
-        this.currentUrl = "evancohe:\\";
+        this.currentUrl = "evanH:\\";
         this.currentUrl += folder.name;
         this.currentFolder = folder.name;
         this.isFolderSelecting = true;
@@ -161,7 +169,7 @@ export default {
       this.viewStyle = type;
     },
     goHome() {
-      this.currentUrl = "evancohe:\\";
+      this.currentUrl = "evanH:\\";
       this.isFolderSelecting = false;
     },
     addFolder() {
@@ -178,7 +186,6 @@ export default {
           ? (this.folderArr[this.editIndex].name = this.beforeRenameVal)
           : (this.folderArr[this.folderArr.length - 1].name = "untitled");
       }
-
       this.editIndex = -1;
     },
     leftClicked() {
@@ -215,7 +222,6 @@ export default {
       this.isMax ? "" : this.resetSize();
     },
     closeHome() {
-      // this.opacity = "0";
       this.isMin = false;
       this.isMax = false;
       this.$emit("closeHome");
@@ -240,10 +246,18 @@ export default {
         this.isPhone = false;
       }
     },
+    touchStart(index) {
+      clearTimeout(this.longPressTimer); //再次清空定时器，防止重复注册定时器
+      this.longPressTimer = setTimeout(() => {
+        this.rightClicked(index);
+      }, 400);
+    },
+    touchEnd() {
+      clearTimeout(this.longPressTimer);
+    },
   },
   directives: {
     focus: {
-      // 指令的定义
       inserted: function (el) {
         el.focus();
       },
@@ -261,11 +275,14 @@ export default {
   display: flex;
   flex-direction: column;
   box-shadow: 4px 4px 0px #2c2c2c;
+  // background-clip: content-box;
   transition: all 0.5s;
+  overflow: hidden;
   .navBar {
     display: flex;
     justify-content: space-between;
     border-bottom: 2px solid #2c2c2c;
+    background-color: #fff;
     // flex: 0.1;
     .path {
       width: 100%;
@@ -299,6 +316,7 @@ export default {
         justify-content: center;
         align-items: center;
         cursor: default;
+        font-weight: bold;
         &:hover {
           background-color: #e2e2e2;
         }
@@ -318,6 +336,7 @@ export default {
         display: flex;
         justify-content: center;
         align-items: center;
+        font-weight: bold;
         &:hover {
           background-color: #e2e2e2;
         }
@@ -416,7 +435,8 @@ export default {
     align-content: flex-start;
     overflow-y: scroll;
     flex: 8;
-    margin: 5px;
+    padding: 5px;
+    background-color: #fff;
     // transition: all 0.3s;
     .folder-item {
       // background-color: #fff;
@@ -456,7 +476,8 @@ export default {
     overflow-y: hidden;
     overflow-x: scroll;
     flex: 8;
-    margin: 5px;
+    padding: 5px;
+    background-color: #fff;
     .folder-layout {
       display: flex;
       align-items: center;
@@ -497,6 +518,7 @@ export default {
     justify-content: space-between;
     align-items: center;
     padding-right: 10px;
+    background-color: #fff;
     // flex: 0.1;
     .footer-count {
       padding-left: 10px;
@@ -515,6 +537,7 @@ export default {
         height: 20px;
         // background-color: #629caa;
         &:hover {
+          box-shadow: 2px 2px 0px #d8d8d8;
           background-color: #d8d8d8;
         }
       }
@@ -526,6 +549,7 @@ export default {
         height: 14px;
         // background-color: #3a636d;
         &:hover {
+          box-shadow: 2px 2px 0px #d8d8d8;
           background-color: #d8d8d8;
         }
       }

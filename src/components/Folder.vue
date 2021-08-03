@@ -1,12 +1,10 @@
 <template>
-  <div :class="viewStyle == 'folder' ? 'container' : 'container-l'">
-    <div
-      :class="viewStyle == 'folder' ? 'folder-container' : 'folder-container-l'"
-    >
+  <div :class="handleContainerStyle">
+    <div :class="handleFolderContainerStyle">
       <div class="folder-head"></div>
       <div class="folder-body"></div>
     </div>
-    <div :class="viewStyle == 'folder' ? 'folder-name' : 'folder-name-l'">
+    <div :class="handleFolderNameStyle">
       {{ folderName }}
     </div>
   </div>
@@ -22,10 +20,22 @@ export default {
       default: "folder",
     },
   },
+  computed: {
+    handleContainerStyle() {
+      return this.viewStyle == "folder" ? "container" : "container-l";
+    },
+    handleFolderContainerStyle() {
+      return this.viewStyle == "folder"
+        ? "folder-container"
+        : "folder-container-l";
+    },
+    handleFolderNameStyle() {
+      return this.viewStyle == "folder" ? "folder-name" : "folder-name-l";
+    },
+  },
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 .container {
   background: rgba(0, 0, 0, 0);
@@ -65,7 +75,7 @@ export default {
   .folder-body {
     width: 60px;
     height: 40px;
-    // background-color: #fefefe;
+    background-color: #eeeeee;
     border: 1px solid #2c2c2c;
     border-radius: 0px 6px 6px 6px;
     box-shadow: 3px 3px 0px #2c2c2c;
@@ -89,7 +99,7 @@ export default {
   .folder-body {
     width: 30px;
     height: 20px;
-    background-color: #fefefe;
+    background-color: #eeeeee;
     border: 1px solid #2c2c2c;
     border-radius: 0px 4px 4px 4px;
     box-shadow: 2px 3px 0px #2c2c2c;

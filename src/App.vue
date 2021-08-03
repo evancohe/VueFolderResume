@@ -14,15 +14,18 @@ export default {
 </script>
 
 <style lang="scss">
-// html {
-//   background-color: #eeeeee;
-// }
+html {
+  background-size: 15px 15px;
+  background-image: linear-gradient(to right, #fff 1px, transparent 1px),
+    linear-gradient(to bottom, #fff 1px, #eeeeee 1px);
+}
 #app {
   -moz-user-select: none; /*火狐*/
   -webkit-user-select: none; /*webkit浏览器*/
   -ms-user-select: none; /*IE10*/
   user-select: none;
-  font-family: sans-serif, monospace, Helvetica, Arial;
+   font-family: Times, "Times New Roman", Georgia, serif;
+  // font-family: sans-serif, monospace, Helvetica, Arial;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;

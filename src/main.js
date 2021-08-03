@@ -10,6 +10,12 @@ Vue.component('vue-draggable-resizable', VueDraggableResizable)
 
 Vue.config.productionTip = false
 
+Vue.prototype.globalClick =function(callback) {
+  document.onclick =function() {
+      callback();
+  };
+};
+
 new Vue({
   // router,
   render: h => h(App),
